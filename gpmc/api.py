@@ -28,11 +28,11 @@ class Api:
         """
         self.proxy = proxy
         self.timeout = timeout
-        self.android_api_version = 28
-        self.model = "Pixel XL"
+        self.android_api_version = 29
+        self.model = "Pixel"
         self.make = "Google"
         self.client_version_code = 49029607
-        self.user_agent = f"com.google.android.apps.photos/{self.client_version_code} (Linux; U; Android 9; en_US; Pixel XL; Build/PQ2A.190205.001; Cronet/127.0.6510.5) (gzip)"
+        self.user_agent = f"com.google.android.apps.photos/{self.client_version_code} (Linux; U; Android 10; en_US; Pixel; Build/QP1A.191005.007.A3; Cronet/127.0.6510.5) (gzip)"
         self.language = language
         self.auth_data = auth_data.strip()
         self.auth_response_cache: dict[str, str] = {"Expiry": "0", "Auth": ""}
@@ -98,7 +98,7 @@ class Api:
             "Connection": "Keep-Alive",
             "Content-Type": "application/x-www-form-urlencoded",
             "device": auth_request_data["androidId"],
-            "User-Agent": "GoogleAuth/1.4 (Pixel XL PQ2A.190205.001); gzip",
+            "User-Agent": "GoogleAuth/1.4 (Pixel QP1A.191005.007.A3); gzip",
         }
 
         with self._new_session() as session:
@@ -189,7 +189,7 @@ class Api:
             )
         response.raise_for_status()
 
-        decoded_message, _ = decode_message(response.content, message_types.FIND_REMOTE_MEDIA_BY_HASH_RESPONSE)  # type: ignore
+        decoded_message, _ = decode_message(response.content)
         media_key = decoded_message["1"].get("2", {}).get("2", {}).get("1", None)
         return media_key
 
@@ -306,7 +306,7 @@ class Api:
                 timeout=self.timeout,
             )
         response.raise_for_status()
-        decoded_message, _ = decode_message(response.content, message_types.COMMIT_UPLOAD_RESPONSE)  # type: ignore
+        decoded_message, _ = decode_message(response.content)
         try:
             media_key = decoded_message["1"]["3"]["1"]
         except KeyError as e:
@@ -440,7 +440,7 @@ class Api:
             )
         response.raise_for_status()
 
-        decoded_message, _ = decode_message(response.content, message_types.CREATE_ALBUM_RESPONSE)  # type: ignore
+        decoded_message, _ = decode_message(response.content)
         return decoded_message["1"]["1"]
 
     def add_media_to_album(self, album_media_key: str, media_keys: Sequence[str]) -> dict:
